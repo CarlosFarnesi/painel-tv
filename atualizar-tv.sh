@@ -9,6 +9,7 @@ TIZEN="$HOME/tizen-studio/tools/ide/bin/tizen"
 SDB="$HOME/tizen-studio/tools/sdb"
 
 cp "$HERE/index.html" "$HERE/tizen-app/index.html"
+cp "$HERE/config.js" "$HERE/tizen-app/config.js"
 mkdir -p "$HERE/dist"
 "$TIZEN" package -t wgt -s PainelTV -o "$HERE/dist" -- "$HERE/tizen-app" | tail -1
 mv -f "$HERE/dist/Painel da Sala.wgt" "$HERE/dist/PainelDaSala.wgt"

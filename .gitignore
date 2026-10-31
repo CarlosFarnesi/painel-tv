@@ -2,5 +2,5 @@ dist/
 tizen-app/index.html
 tizen-app/.manifest.tmp
 .DS_Store
-v2/config.js
+config.js
 tizen-app/config.js
