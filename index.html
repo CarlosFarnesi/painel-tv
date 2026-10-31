@@ -408,6 +408,18 @@
     setTimeout(load, 2 * 60 * 1000);
   }
 
+  /* ---------- Integração com a TV Samsung (só roda dentro do app Tizen) ---------- */
+  try {
+    if (window.tizen) {
+      try { tizen.power.request("SCREEN", "SCREEN_NORMAL"); } catch (e1) {}
+      document.addEventListener("keydown", function (ev) {
+        if (ev.keyCode === 10009 || ev.keyCode === 27) { /* botão Voltar do controle */
+          try { tizen.application.getCurrentApplication().exit(); } catch (e2) {}
+        }
+      });
+    }
+  } catch (e0) {}
+
   load();
   setInterval(load, 15 * 60 * 1000);
 })();
