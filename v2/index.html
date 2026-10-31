@@ -58,7 +58,8 @@
   .text-shadow { text-shadow: 0 0.3vh 1.6vh rgba(0,0,0,0.55); }
 
   .top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .greeting { font-size: 2.3vh; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.8vh 0; }
+  .greeting { font-size: 3.4vh; font-weight: 500; letter-spacing: 0.02em; color: var(--text); margin: 0 0 0.6vh 0; }
+  .greeting b { font-weight: 700; color: var(--accent); }
   .clock { font-size: 15vh; line-height: 0.95; font-weight: 300; letter-spacing: -0.03em; margin: 0; font-variant-numeric: tabular-nums; }
   .clock .sec { font-size: 3.6vh; font-weight: 400; color: var(--muted); margin-left: 0.8vw; letter-spacing: 0; }
   .date { font-size: 3.1vh; font-weight: 400; margin: 1vh 0 0 0; }
@@ -76,6 +77,19 @@
   .now .meta { font-size: 2.2vh; color: var(--muted); margin: 0.6vh 0 0 0; }
   .now .meta b { color: var(--text); font-weight: 600; }
   .now .meta .r { color: var(--rain); font-weight: 600; }
+  .now .grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); grid-column-gap: 0.8vw; margin-top: 1.6vh;
+    padding-top: 1.4vh; border-top: 1px solid var(--glass-border); text-align: center; }
+  .now .grid .k { font-size: 1.6vh; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .now .grid .v { font-size: 2.6vh; font-weight: 600; margin: 0.3vh 0 0 0; white-space: nowrap; }
+  .now .grid .v small { font-size: 1.7vh; color: var(--muted); font-weight: 400; }
+  .now .days { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); grid-column-gap: 0.8vw; margin-top: 1.4vh;
+    padding-top: 1.4vh; border-top: 1px solid var(--glass-border); text-align: center; }
+  .now .days .n { font-size: 1.7vh; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .now .days .i { width: 4.2vh; height: 4.2vh; margin: 0.3vh auto 0 auto; }
+  .now .days .i svg { width: 100%; height: 100%; }
+  .now .days .t { font-size: 2.2vh; font-weight: 600; margin: 0.2vh 0 0 0; white-space: nowrap; }
+  .now .days .t small { color: var(--muted); font-weight: 400; }
+  .now .days .p { font-size: 1.6vh; color: var(--rain); margin: 0.2vh 0 0 0; font-weight: 500; }
 
   /* ---------- Apps ---------- */
   .apps-wrap { }
@@ -135,6 +149,8 @@
       </div>
       <p class="desc" id="now-desc">Buscando previsão…</p>
       <p class="meta" id="now-meta"></p>
+      <div class="grid" id="now-grid"></div>
+      <div class="days" id="now-days"></div>
     </div>
   </div>
 
@@ -191,7 +207,7 @@
     $("ss").textContent = pad(d.getSeconds());
     $("date").textContent = DIAS[d.getDay()] + ", " + d.getDate() + " de " + MESES[d.getMonth()] + " de " + d.getFullYear();
     var h = d.getHours();
-    $("greeting").textContent = (h < 5 ? "Boa madrugada" : h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite") + (CFG.nome ? ", " + CFG.nome : "");
+    $("greeting").textContent = (h < 5 ? "Boa madrugada" : h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite") + ", " + (CFG.nome || "família Farnesi");
     if (h === 4 && d.getMinutes() === 0 && d.getSeconds() === 0) location.reload();
   }
   tick(); setInterval(tick, 1000);
@@ -235,9 +251,9 @@
 
   /* ---------- Clima ---------- */
   var API = "https://api.open-meteo.com/v1/forecast?latitude=-22.9056&longitude=-47.0608"
-    + "&current=temperature_2m,apparent_temperature,is_day,weather_code"
-    + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max"
-    + "&timezone=America%2FSao_Paulo&forecast_days=1";
+    + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,is_day,weather_code"
+    + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset"
+    + "&timezone=America%2FSao_Paulo&forecast_days=4";
   function xhrJSON(method, url, body, headers, cb) {
     var x = new XMLHttpRequest();
     x.open(method, url, true); x.timeout = 25000;
@@ -257,6 +273,21 @@
       var pp = dy.precipitation_probability_max[0];
       $("now-meta").innerHTML = "Máx <b>" + r(dy.temperature_2m_max[0]) + "°</b> · Mín <b>" + r(dy.temperature_2m_min[0]) + "°</b>"
         + (pp != null ? " · <span class='r'>Chuva " + pp + "%</span>" : "");
+      var uv = dy.uv_index_max[0], uvTxt = uv == null ? "--" : (uv < 3 ? "baixo" : uv < 6 ? "moderado" : uv < 8 ? "alto" : uv < 11 ? "muito alto" : "extremo");
+      $("now-grid").innerHTML =
+          '<div><p class="k">Sensação</p><p class="v">' + r(cur.apparent_temperature) + '<small>°C</small></p></div>'
+        + '<div><p class="k">Umidade</p><p class="v">' + cur.relative_humidity_2m + '<small>%</small></p></div>'
+        + '<div><p class="k">Vento</p><p class="v">' + r(cur.wind_speed_10m) + '<small> km/h</small></p></div>'
+        + '<div><p class="k">UV</p><p class="v">' + (uv == null ? "--" : r(uv)) + '<small> ' + uvTxt + '</small></p></div>';
+      var DC = ["dom","seg","ter","qua","qui","sex","sáb"], html = "";
+      for (var j = 1; j < dy.time.length && j <= 3; j++) {
+        var q = dy.time[j].split("-"), dd = new Date(parseInt(q[0],10), parseInt(q[1],10)-1, parseInt(q[2],10));
+        var pj = dy.precipitation_probability_max[j];
+        html += '<div><p class="n">' + (j === 1 ? "Amanhã" : DC[dd.getDay()]) + '</p><div class="i">' + icon(dy.weather_code[j], true) + '</div>'
+          + '<p class="t">' + r(dy.temperature_2m_max[j]) + '° <small>' + r(dy.temperature_2m_min[j]) + '°</small></p>'
+          + '<p class="p">' + (pj != null && pj > 0 ? pj + "% chuva" : "&nbsp;") + '</p></div>';
+      }
+      $("now-days").innerHTML = html + '<div style="grid-column:1/-1" class="n"><p class="n" style="margin-top:1vh">Sol ' + dy.sunrise[0].substr(11,5) + ' ↑ &nbsp; ' + dy.sunset[0].substr(11,5) + ' ↓</p></div>';
     });
   }
   loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
