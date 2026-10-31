@@ -1,0 +1,4 @@
+dist/
+tizen-app/index.html
+tizen-app/.manifest.tmp
+.DS_Store
