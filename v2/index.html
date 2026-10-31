@@ -35,9 +35,14 @@
   }
   .slot .pic {
     position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-    background-size: contain; background-repeat: no-repeat; background-position: center;
+    background-size: cover; background-repeat: no-repeat; background-position: center 0%;
   }
-  .slot.cover .pic { background-size: cover; }
+  /* foto em pé: começa pelo topo (rostos) e desliza até o pé da foto durante a exposição */
+  .slot.pan .pic { -webkit-transition: background-position linear; transition: background-position linear; }
+  .slot.pan.go .pic { background-position: center 100%; }
+  /* foto deitada: zoom bem lento para dar vida */
+  .slot.zoom .pic { -webkit-transform: scale(1); transform: scale(1); -webkit-transition: -webkit-transform linear; transition: transform linear; }
+  .slot.zoom.go .pic { -webkit-transform: scale(1.08); transform: scale(1.08); }
   .shade-top { position: fixed; left: 0; top: 0; width: 100%; height: 42vh;
     background: -webkit-linear-gradient(top, rgba(0,0,0,0.62), rgba(0,0,0,0));
     background: linear-gradient(to bottom, rgba(0,0,0,0.62), rgba(0,0,0,0)); }
@@ -307,12 +312,20 @@
     var img = new Image();
     img.onload = function () {
       var slot = $(showingA ? "slot-b" : "slot-a"), other = $(showingA ? "slot-a" : "slot-b");
-      var landscape = img.width >= img.height * 1.15;
-      slot.className = "slot" + ((COVER || landscape) ? " cover" : "");
+      var portrait = img.height > img.width * 1.05;
+      var pic = slot.children[1];
+      /* zera a animação anterior antes de trocar a imagem */
+      slot.className = "slot"; pic.style.transitionDuration = "0s"; pic.style.webkitTransitionDuration = "0s";
       slot.children[0].style.backgroundImage = "url('" + p.url + "')";
-      slot.children[1].style.backgroundImage = "url('" + p.url + "')";
-      slot.className += " show"; other.className = other.className.replace(" show", "");
+      pic.style.backgroundImage = "url('" + p.url + "')";
+      slot.className = "slot " + (portrait ? "pan" : "zoom") + " show";
+      other.className = other.className.replace(" show", "");
       showingA = !showingA;
+      setTimeout(function () {
+        var dur = (PHOTO_SECONDS + 2) + "s";
+        pic.style.transitionDuration = dur; pic.style.webkitTransitionDuration = dur;
+        slot.className += " go";
+      }, 80);
     };
     img.onerror = function () { setTimeout(nextPhoto, 1500); };
     img.src = p.url;
