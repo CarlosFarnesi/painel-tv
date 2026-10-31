@@ -88,7 +88,7 @@
     -webkit-transform: translate3d(0,0,0) scale(1); transform: translate3d(0,0,0) scale(1);
     -webkit-transition: -webkit-transform 0.15s ease, border-color 0.15s ease; transition: transform 0.15s ease, border-color 0.15s ease; }
   .app:last-child { margin-right: 0; }
-  .app img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: none; }
+  .app img { display: none; max-width: 62%; max-height: 52%; width: auto; height: auto; position: relative; z-index: 1; }
   .app.has-icon img { display: block; }
   .app.has-icon .label { display: none; }
   .app .label { position: relative; z-index: 1; }
@@ -381,17 +381,24 @@
     for (var j = 0; j < cards.length; j++) (function (idx) {
       var card = cards[idx], a = CATALOG[card.getAttribute("data-key")];
       card.onclick = function () { setFocus(idx); launch(); };
-      /* ícone oficial: o que a própria TV guarda para o app instalado */
-      if (IS_TV) {
+      /* logo: 1) vetor embutido em logos/<app>.svg; 2) ícone grande da TV; 3) cartão colorido com o nome */
+      var im = card.children[0];
+      function tryTvIcon() {
+        if (!IS_TV) return;
         try {
           var info = tizen.application.getAppInfo(a.id);
           if (info && info.iconPath) {
-            var im = card.children[0];
-            im.onload = function () { card.className += " has-icon"; };
-            im.src = (info.iconPath.indexOf("file://") === 0 ? "" : "file://") + info.iconPath;
+            var probe = new Image();
+            probe.onload = function () {
+              if (probe.naturalWidth >= 200) { im.onload = function () { card.className += " has-icon"; }; im.src = probe.src; }
+            };
+            probe.src = (info.iconPath.indexOf("file://") === 0 ? "" : "file://") + info.iconPath;
           }
         } catch (e) {}
       }
+      im.onload = function () { card.className += " has-icon"; };
+      im.onerror = function () { im.onerror = null; tryTvIcon(); };
+      im.src = "logos/" + card.getAttribute("data-key") + ".svg";
     })(j);
     setFocus(0);
   }
