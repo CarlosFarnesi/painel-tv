@@ -4,3 +4,5 @@ tizen-app/.manifest.tmp
 .DS_Store
 config.js
 tizen-app/config.js
+tizen-app/author-signature.xml
+tizen-app/signature1.xml
