@@ -88,11 +88,13 @@
     -webkit-transform: translate3d(0,0,0) scale(1); transform: translate3d(0,0,0) scale(1);
     -webkit-transition: -webkit-transform 0.15s ease, border-color 0.15s ease; transition: transform 0.15s ease, border-color 0.15s ease; }
   .app:last-child { margin-right: 0; }
-  .app img { display: none; max-width: 62%; max-height: 52%; width: auto; height: auto; position: relative; z-index: 1; }
+  .app img { display: none; width: 68%; height: 46%; object-fit: contain; position: relative; z-index: 1; }
+  .app[data-key="prime"] img { width: 60%; height: 74%; }
+  .app[data-key="appletv"] img { height: 50%; }
   .app.has-icon img { display: block; }
   .app.has-icon .label { display: none; }
   .app .label { position: relative; z-index: 1; }
-  .app.focus { -webkit-transform: translate3d(0,0,0) scale(1.07); transform: translate3d(0,0,0) scale(1.07); border-color: #ffffff; z-index: 3; }
+  .app.focus { -webkit-transform: translate3d(0,0,0) scale(1.07); transform: translate3d(0,0,0) scale(1.07); border-color: #ffd27a; z-index: 3; }
   .hint { font-size: 1.9vh; color: var(--muted); margin: 1.6vh 0 0 0.4vw; letter-spacing: 0.06em; }
 
   .toast { position: fixed; left: 50%; top: 50%; z-index: 9; -webkit-transform: translate(-50%,-50%); transform: translate(-50%,-50%);
@@ -166,12 +168,12 @@
   var NOME = CFG.nome || "família Farnesi";
 
   var CATALOG = {
-    netflix: { name: "Netflix", id: "org.tizen.netflix-app", bg: "#e50914" },
-    youtube: { name: "YouTube", id: "9Ur5IzDKqV.TizenYouTube", bg: "#cc0000" },
-    prime:   { name: "Prime Video", id: "evKhCgZelL.AmazonIgnitionLauncher2", bg: "#00a8e1" },
-    disney:  { name: "Disney+", id: "MCmYXNxgcu.DisneyPlus", bg: "#113ccf" },
+    netflix: { name: "Netflix", id: "org.tizen.netflix-app", bg: "#000000" },
+    youtube: { name: "YouTube", id: "9Ur5IzDKqV.TizenYouTube", bg: "#ffffff" },
+    prime:   { name: "Prime Video", id: "evKhCgZelL.AmazonIgnitionLauncher2", bg: "#0779ff" },
+    disney:  { name: "Disney+", id: "MCmYXNxgcu.DisneyPlus", bg: "linear-gradient(135deg,#ffffff,#e4ecff)" },
     spotify: { name: "Spotify", id: "rJeHak5zRg.Spotify", bg: "#1db954" },
-    appletv: { name: "Apple TV", id: "com.samsung.tv.aria-video", bg: "#2c2c2e" },
+    appletv: { name: "Apple TV", id: "com.samsung.tv.aria-video", bg: "#000000" },
     tvplus:  { name: "TV Plus", id: "com.samsung.tv.tvPlusDeeplinker", bg: "#5b2fd6" }
   };
   var APP_KEYS = (CFG.apps || "netflix,youtube,prime,disney,appletv").split(",");

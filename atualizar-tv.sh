@@ -10,6 +10,7 @@ SDB="$HOME/tizen-studio/tools/sdb"
 
 cp "$HERE/index.html" "$HERE/tizen-app/index.html"
 cp "$HERE/config.js" "$HERE/tizen-app/config.js"
+rm -rf "$HERE/tizen-app/logos" && cp -R "$HERE/logos" "$HERE/tizen-app/logos"
 mkdir -p "$HERE/dist"
 "$TIZEN" package -t wgt -s PainelTV -o "$HERE/dist" -- "$HERE/tizen-app" | tail -1
 mv -f "$HERE/dist/Painel da Sala.wgt" "$HERE/dist/PainelDaSala.wgt"
